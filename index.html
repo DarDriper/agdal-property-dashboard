@@ -1110,6 +1110,34 @@ td.amt  { font-family:'Fira Code',monospace; font-size:12px; font-weight:600; }
 .bl-add-btn:hover { background:rgba(239,68,68,.12); }
 
 /* ── MODAL ── */
+/* FAMILY OPS */
+.ops-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px; }
+.ops-grid.three { grid-template-columns:1fr 1fr 1fr; }
+.check-item { display:flex; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid var(--border); }
+.check-item:last-child { border-bottom:none; }
+.check-item input { width:18px; height:18px; accent-color:var(--p); flex-shrink:0; }
+.check-main { flex:1; min-width:0; }
+.check-title { font-size:13px; font-weight:650; color:var(--ink); }
+.check-sub { font-size:10.5px; color:var(--ink4); margin-top:2px; }
+.check-item.done .check-title { color:var(--ink4); text-decoration:line-through; }
+.ops-meter { height:7px; border-radius:999px; background:var(--bg); overflow:hidden; margin-top:10px; }
+.ops-meter > div { height:100%; background:linear-gradient(90deg,var(--p),var(--green)); border-radius:999px; transition:width .25s; }
+.balance-row { display:flex; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid var(--border); }
+.balance-row:last-child { border-bottom:none; }
+.balance-name { flex:1; min-width:0; font-size:13px; font-weight:650; color:var(--ink); }
+.balance-meta { font-size:10.5px; color:var(--ink4); margin-top:2px; font-family:'Fira Code',monospace; }
+.balance-amt { font-family:'Fira Code',monospace; font-size:12px; font-weight:700; text-align:right; white-space:nowrap; }
+.settle-line { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:9px 10px; border-radius:9px; background:var(--bg); margin-bottom:7px; font-size:12px; }
+.note-form { display:flex; gap:8px; margin-bottom:12px; }
+.note-input { flex:1; min-width:0; border:1.5px solid var(--border2); border-radius:10px; padding:10px 12px; font-family:'Plus Jakarta Sans',sans-serif; font-size:13px; outline:none; }
+.note-input:focus { border-color:var(--p3); }
+.note-btn { border:none; min-height:40px; padding:0 14px; border-radius:10px; background:var(--p); color:#fff; font-family:'Plus Jakarta Sans',sans-serif; font-size:12px; font-weight:700; cursor:pointer; }
+.note-item { padding:10px 0; border-bottom:1px solid var(--border); display:flex; gap:10px; align-items:flex-start; }
+.note-item:last-child { border-bottom:none; }
+.note-text { flex:1; min-width:0; font-size:13px; line-height:1.45; color:var(--ink2); overflow-wrap:anywhere; }
+.note-meta { font-size:10px; color:var(--ink4); font-family:'Fira Code',monospace; margin-top:3px; }
+.note-del { width:26px; height:26px; border-radius:50%; border:1px solid var(--border); background:var(--bg); color:var(--ink3); cursor:pointer; flex-shrink:0; }
+
 .modal-ov { display:none; position:fixed; inset:0; z-index:250; align-items:center; justify-content:center; background:rgba(17,24,39,.4); backdrop-filter:blur(8px); }
 .modal-ov.show { display:flex; }
 .modal-box { background:var(--white); border:1.5px solid var(--border); border-radius:var(--r-xl); padding:28px; max-width:440px; width:92%; position:relative; box-shadow:0 20px 60px rgba(17,24,39,.2); }
@@ -1416,6 +1444,8 @@ td.amt  { font-family:'Fira Code',monospace; font-size:12px; font-weight:600; }
   .repeat-item { gap:8px; }
   .repeat-count { font-size:20px; letter-spacing:0; }
   .repeat-sub { overflow-wrap:anywhere; }
+  .ops-grid, .ops-grid.three { grid-template-columns:minmax(0,1fr); }
+  .note-form { flex-direction:column; }
   .bottom-nav { display:flex; height:calc(64px + env(safe-area-inset-bottom)); }
   .bn-item { min-height:52px; }
   .bn-icon-wrap { width:38px; height:28px; }
@@ -1819,6 +1849,37 @@ td.amt  { font-family:'Fira Code',monospace; font-size:12px; font-weight:600; }
       </div>
 
       <div class="fam-cards" id="famCards"></div>
+      <div class="ops-grid three">
+        <div class="card">
+          <div class="card-hd">
+            <div><div class="card-title">Cleaning Checklist</div><div class="card-sub" id="cleaningContext">For the apartment check</div></div>
+            <span class="badge badge-p" id="cleaningProgress">0/0</span>
+          </div>
+          <div id="cleaningList"></div>
+          <div class="ops-meter"><div id="cleaningMeter" style="width:0%;"></div></div>
+          <button class="add-btn" style="margin-top:12px;" onclick="resetCleaningChecklist()">Reset Checklist</button>
+        </div>
+        <div class="card">
+          <div class="card-hd">
+            <div><div class="card-title">Monthly Balance</div><div class="card-sub">Who paid more, who should reimburse</div></div>
+            <select class="filter-inp" id="balanceMonth" onchange="renderFamilyOps()"></select>
+          </div>
+          <div id="balanceList"></div>
+          <div style="height:1px;background:var(--border);margin:10px 0;"></div>
+          <div id="settlementList"></div>
+        </div>
+        <div class="card">
+          <div class="card-hd">
+            <div><div class="card-title">Family Notes</div><div class="card-sub">Saved on this phone/browser</div></div>
+            <span class="badge badge-c" id="notesCount">0</span>
+          </div>
+          <div class="note-form">
+            <input class="note-input" id="familyNoteInput" placeholder="Add note, issue, or reminder...">
+            <button class="note-btn" onclick="addFamilyNote()">Add</button>
+          </div>
+          <div id="familyNotes"></div>
+        </div>
+      </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
         <div class="card"><div class="card-hd"><div class="card-title">Monthly Share Per Person</div></div><div style="height:200px;position:relative;"><canvas id="cFam"></canvas></div></div>
         <div class="card"><div class="card-hd"><div class="card-title">Expenses Fronted By</div></div><div class="donut-wrap" style="height:165px;"><canvas id="cPaidBy"></canvas><div class="donut-center"><div class="donut-val" style="font-size:14px;">Who</div><div class="donut-lbl">Fronted</div></div></div><div id="paidByList" style="margin-top:6px;"></div></div>
@@ -2795,6 +2856,193 @@ function buildAnalytics(){
 // FAMILY
 // ═══════════════════════════════════════════════
 
+const FAMILY_MEMBERS = ['Eliass','Myahmed','Nouhaila'];
+const CLEANING_ITEMS = [
+  ['Trash removed','Kitchen, bathroom, bins, balcony'],
+  ['Sheets changed','Fresh bed sheets and pillow covers'],
+  ['Towels ready','Clean towels placed for next guest'],
+  ['Bathroom cleaned','Toilet, shower, sink, mirror, floor'],
+  ['Kitchen reset','Dishes, fridge check, counters, coffee/water'],
+  ['Floors cleaned','Vacuum and mop all rooms'],
+  ['Keys checked','Key box, apartment keys, garage access'],
+  ['Damage check','Photos or note if anything is broken'],
+  ['Supplies checked','Toilet paper, soap, capsules, water'],
+  ['AC/lights/windows off','Final electricity and security check']
+];
+const NOTES_KEY = 'agdal_family_notes';
+
+function esc(s){
+  return String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+function personKey(name){
+  const n=String(name||'').toLowerCase();
+  if(n.includes('eliass')) return 'Eliass';
+  if(n.includes('myahmed')||n.includes('mh')) return 'Myahmed';
+  if(n.includes('nouhaila')) return 'Nouhaila';
+  if(n.includes('maman')||n.includes('host')) return 'Maman';
+  return String(name||'Other').trim()||'Other';
+}
+
+function currentCleaningBooking(){
+  const now=new Date();
+  const sorted=[...BK].sort((a,b)=>new Date(a.ci)-new Date(b.ci));
+  return sorted.find(b=>new Date(b.ci)<=now&&new Date(b.co)>=now) ||
+         sorted.find(b=>new Date(b.ci)>now) ||
+         sorted[sorted.length-1];
+}
+
+function cleaningKey(){
+  const b=currentCleaningBooking();
+  return 'agdal_cleaning_'+(b?b.id:'general');
+}
+
+function getCleaningState(){
+  try{return JSON.parse(localStorage.getItem(cleaningKey())||'{}')||{};}catch(e){return {};}
+}
+
+function saveCleaningState(state){
+  try{localStorage.setItem(cleaningKey(),JSON.stringify(state));}catch(e){}
+}
+
+function toggleCleanItem(i,checked){
+  const state=getCleaningState();
+  state[i]=!!checked;
+  saveCleaningState(state);
+  renderCleaningChecklist();
+}
+
+function resetCleaningChecklist(){
+  try{localStorage.removeItem(cleaningKey());}catch(e){}
+  renderCleaningChecklist();
+  showToast('Cleaning checklist reset');
+}
+
+function renderCleaningChecklist(){
+  const list=document.getElementById('cleaningList');
+  if(!list) return;
+  const b=currentCleaningBooking();
+  const state=getCleaningState();
+  const done=CLEANING_ITEMS.filter((_,i)=>state[i]).length;
+  const pct=Math.round(done/CLEANING_ITEMS.length*100);
+  const ctx=document.getElementById('cleaningContext');
+  if(ctx) ctx.textContent=b?`${b.guest} - ${fmtDate(b.ci)} to ${fmtDate(b.co)}`:'General apartment checklist';
+  document.getElementById('cleaningProgress').textContent=`${done}/${CLEANING_ITEMS.length}`;
+  document.getElementById('cleaningMeter').style.width=pct+'%';
+  list.innerHTML=CLEANING_ITEMS.map((item,i)=>`
+    <label class="check-item ${state[i]?'done':''}">
+      <input type="checkbox" ${state[i]?'checked':''} onchange="toggleCleanItem(${i},this.checked)">
+      <div class="check-main">
+        <div class="check-title">${esc(item[0])}</div>
+        <div class="check-sub">${esc(item[1])}</div>
+      </div>
+    </label>`).join('');
+}
+
+function selectedBalanceMonth(){
+  const sel=document.getElementById('balanceMonth');
+  return sel&&sel.value ? sel.value : (MO[MO.length-1]&&MO[MO.length-1].m);
+}
+
+function syncBalanceMonthOptions(){
+  const sel=document.getElementById('balanceMonth');
+  if(!sel) return;
+  const old=sel.value;
+  sel.innerHTML=MO.map(m=>`<option value="${esc(m.m)}">${esc(m.m)}</option>`).join('');
+  sel.value=old || (MO[MO.length-1]&&MO[MO.length-1].m) || '';
+}
+
+function monthlyBalance(month){
+  const monthExpenses=EX.filter(e=>e.mo===month);
+  const total=monthExpenses.reduce((a,e)=>a+e.amt,0);
+  const balances={};
+  FAMILY_MEMBERS.forEach(n=>balances[n]=-(total/FAMILY_MEMBERS.length));
+  monthExpenses.forEach(e=>{
+    const payer=personKey(e.by);
+    balances[payer]=(balances[payer]||0)+e.amt;
+  });
+  return {monthExpenses,total,balances};
+}
+
+function settlementPlan(balances){
+  const creditors=Object.entries(balances).filter(([,v])=>v>1).map(([n,v])=>({n,amt:v})).sort((a,b)=>b.amt-a.amt);
+  const debtors=Object.entries(balances).filter(([,v])=>v<-1).map(([n,v])=>({n,amt:-v})).sort((a,b)=>b.amt-a.amt);
+  const out=[];
+  let i=0,j=0;
+  while(i<debtors.length&&j<creditors.length){
+    const amt=Math.min(debtors[i].amt,creditors[j].amt);
+    if(amt>1) out.push({from:debtors[i].n,to:creditors[j].n,amt});
+    debtors[i].amt-=amt; creditors[j].amt-=amt;
+    if(debtors[i].amt<=1) i++;
+    if(creditors[j].amt<=1) j++;
+  }
+  return out;
+}
+
+function renderMonthlyBalance(){
+  const list=document.getElementById('balanceList');
+  const settles=document.getElementById('settlementList');
+  if(!list||!settles) return;
+  const month=selectedBalanceMonth();
+  const {monthExpenses,total,balances}=monthlyBalance(month);
+  const names=Object.keys(balances).sort((a,b)=>(FAMILY_MEMBERS.includes(b)?0:1)-(FAMILY_MEMBERS.includes(a)?0:1)||a.localeCompare(b));
+  list.innerHTML=names.map(n=>{
+    const paid=monthExpenses.filter(e=>personKey(e.by)===n).reduce((a,e)=>a+e.amt,0);
+    const bal=balances[n]||0;
+    const label=bal>=1?'Gets reimbursed':bal<=-1?'Should pay':'Balanced';
+    return `<div class="balance-row">
+      <div class="balance-name">${esc(n)}<div class="balance-meta">paid ${Math.round(paid).toLocaleString()} MAD - month total ${Math.round(total).toLocaleString()} MAD</div></div>
+      <div class="balance-amt" style="color:${bal>=1?'var(--green)':bal<=-1?'var(--red)':'var(--ink4)'};">${bal>=1?'+':''}${Math.round(bal).toLocaleString()}<div style="font-size:9px;font-weight:600;color:var(--ink4);font-family:'Plus Jakarta Sans',sans-serif;">${label}</div></div>
+    </div>`;
+  }).join('') || '<div class="empty-state-sub">No expenses for this month.</div>';
+  const plan=settlementPlan(balances);
+  settles.innerHTML=plan.length ? plan.map(p=>`<div class="settle-line"><span>${esc(p.from)} pays ${esc(p.to)}</span><strong>${Math.round(p.amt).toLocaleString()} MAD</strong></div>`).join('') : '<div class="empty-state-sub">No reimbursement needed for this month.</div>';
+}
+
+function getFamilyNotes(){
+  try{return JSON.parse(localStorage.getItem(NOTES_KEY)||'[]')||[];}catch(e){return [];}
+}
+
+function saveFamilyNotes(notes){
+  try{localStorage.setItem(NOTES_KEY,JSON.stringify(notes));}catch(e){}
+}
+
+function addFamilyNote(){
+  const inp=document.getElementById('familyNoteInput');
+  const text=(inp&&inp.value||'').trim();
+  if(!text) return;
+  const notes=getFamilyNotes();
+  notes.unshift({id:Date.now(),text,ts:new Date().toISOString()});
+  saveFamilyNotes(notes.slice(0,30));
+  inp.value='';
+  renderFamilyNotes();
+  showToast('Note added');
+}
+
+function deleteFamilyNote(id){
+  saveFamilyNotes(getFamilyNotes().filter(n=>n.id!==id));
+  renderFamilyNotes();
+}
+
+function renderFamilyNotes(){
+  const wrap=document.getElementById('familyNotes');
+  if(!wrap) return;
+  const notes=getFamilyNotes();
+  document.getElementById('notesCount').textContent=notes.length;
+  wrap.innerHTML=notes.length ? notes.map(n=>`
+    <div class="note-item">
+      <div class="note-text">${esc(n.text)}<div class="note-meta">${new Date(n.ts).toLocaleDateString('en',{day:'numeric',month:'short'})} - ${new Date(n.ts).toLocaleTimeString('en',{hour:'2-digit',minute:'2-digit'})}</div></div>
+      <button class="note-del" onclick="deleteFamilyNote(${n.id})">x</button>
+    </div>`).join('') : '<div class="empty-state-sub">No notes yet.</div>';
+}
+
+function renderFamilyOps(){
+  syncBalanceMonthOptions();
+  renderCleaningChecklist();
+  renderMonthlyBalance();
+  renderFamilyNotes();
+}
+
 function buildFamily(){
   const members=[
     {name:'Eliass',  emoji:'👨', color:'#4F52E8'},
@@ -2922,6 +3170,7 @@ function buildFamily(){
       <td><div style="display:flex;align-items:center;gap:8px;"><div style="flex:1;height:3px;background:var(--bg);border-radius:2px;overflow:hidden;"><div style="height:100%;width:${m.occ}%;background:var(--p);border-radius:2px;"></div></div><span class="mono">${m.occ}%</span></div></td>
     </tr>`;
   }).join('');
+  renderFamilyOps();
 }
 
 // ═══════════════════════════════════════════════
@@ -3882,6 +4131,13 @@ function removeFlag(id){
 setTs();
 startAutoRefresh();
 setTimeout(doRefresh, 1500);
+
+document.addEventListener('keydown', e=>{
+  if(e.key==='Enter' && e.target && e.target.id==='familyNoteInput'){
+    e.preventDefault();
+    addFamilyNote();
+  }
+});
 
 // ── TOUCH SWIPE for calendar ──
 (function(){
