@@ -1608,15 +1608,15 @@ td.amt  { font-family:'Fira Code',monospace; font-size:12px; font-weight:600; }
         <!-- Upcoming / Alerts -->
         <div class="reminder-card">
           <div class="reminder-eyebrow">Next Check-in</div>
-          <div class="reminder-title">Wael Abdulaah</div>
-          <div class="reminder-detail">May 7 → May 10 · 3 nights · 2,022 MAD</div>
+          <div class="reminder-title" id="nextGuestName">Loading...</div>
+          <div class="reminder-detail" id="nextGuestDetail">Syncing booking table</div>
           <button class="reminder-btn" onclick="goTab('bookings',document.querySelector('.nav-item:nth-child(6)'))">
             📋 View Booking
           </button>
           <div class="divider" style="border-color:rgba(255,255,255,.15);margin:16px 0;"></div>
           <div class="reminder-eyebrow" style="margin-bottom:6px;">Current Guest</div>
-          <div style="font-size:15px;font-weight:700;position:relative;">Siham Cheri</div>
-          <div style="font-size:11.5px;color:rgba(255,255,255,.65);margin-top:2px;font-family:'Fira Code',monospace;position:relative;">May 4 → May 7 · Checked In ✓</div>
+          <div style="font-size:15px;font-weight:700;position:relative;" id="currentGuestName">Loading...</div>
+          <div style="font-size:11.5px;color:rgba(255,255,255,.65);margin-top:2px;font-family:'Fira Code',monospace;position:relative;" id="currentGuestDetail">Syncing booking table</div>
         </div>
 
         <!-- Recent bookings -->
@@ -1841,14 +1841,13 @@ td.amt  { font-family:'Fira Code',monospace; font-size:12px; font-weight:600; }
 
     <!-- ══ FAMILY ══ -->
     <div class="tab" id="tab-family">
-      <div class="full-tab-header"><div class="full-tab-title">Family Split</div><div class="full-tab-sub">3-way equal profit distribution · Eliass · Myahmed · Nouhaila</div></div>
+      <div class="full-tab-header"><div class="full-tab-title">Family Ops</div><div class="full-tab-sub">Cleaning checklist · monthly reimbursements · family notes</div></div>
 
       <!-- Current month hero row -->
       <div style="display:grid;grid-template-columns:1.2fr 1fr 1fr 1fr;gap:12px;margin-bottom:14px;" id="famHeroRow">
         <!-- filled by buildFamily() -->
       </div>
 
-      <div class="fam-cards" id="famCards"></div>
       <div class="ops-grid three">
         <div class="card">
           <div class="card-hd">
@@ -1861,12 +1860,10 @@ td.amt  { font-family:'Fira Code',monospace; font-size:12px; font-weight:600; }
         </div>
         <div class="card">
           <div class="card-hd">
-            <div><div class="card-title">Monthly Balance</div><div class="card-sub">Who paid more, who should reimburse</div></div>
+            <div><div class="card-title">Monthly Balance</div><div class="card-sub">Only people who paid expenses</div></div>
             <select class="filter-inp" id="balanceMonth" onchange="renderFamilyOps()"></select>
           </div>
           <div id="balanceList"></div>
-          <div style="height:1px;background:var(--border);margin:10px 0;"></div>
-          <div id="settlementList"></div>
         </div>
         <div class="card">
           <div class="card-hd">
@@ -1880,9 +1877,10 @@ td.amt  { font-family:'Fira Code',monospace; font-size:12px; font-weight:600; }
           <div id="familyNotes"></div>
         </div>
       </div>
+      <div class="fam-cards" id="famCards"></div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
-        <div class="card"><div class="card-hd"><div class="card-title">Monthly Share Per Person</div></div><div style="height:200px;position:relative;"><canvas id="cFam"></canvas></div></div>
-        <div class="card"><div class="card-hd"><div class="card-title">Expenses Fronted By</div></div><div class="donut-wrap" style="height:165px;"><canvas id="cPaidBy"></canvas><div class="donut-center"><div class="donut-val" style="font-size:14px;">Who</div><div class="donut-lbl">Fronted</div></div></div><div id="paidByList" style="margin-top:6px;"></div></div>
+        <div class="card"><div class="card-hd"><div><div class="card-title">Stay Handoff</div><div class="card-sub">Current and next check-in from bookings</div></div></div><div id="familyStayHandoff"></div></div>
+        <div class="card"><div class="card-hd"><div><div class="card-title">This Month Expense Feed</div><div class="card-sub">Latest expenses from the selected month</div></div></div><div id="monthExpenseFeed"></div></div>
       </div>
       <div class="card"><div class="card-hd"><div class="card-title">Monthly Breakdown</div></div><div class="tbl-wrap" style="border:none;box-shadow:none;"><table><thead><tr><th>Month</th><th>Revenue</th><th>Expenses</th><th>Net Profit</th><th>Each Gets</th><th>Occupancy</th></tr></thead><tbody id="famTable"></tbody></table></div></div>
     </div>
@@ -1915,7 +1913,7 @@ td.amt  { font-family:'Fira Code',monospace; font-size:12px; font-weight:600; }
   <button class="bn-item" onclick="goTab('calendar',null)" data-tab="calendar"><div class="bn-icon-wrap"><span class="bn-ico">▫</span></div><span class="bn-label">Calendar</span></button>
   <button class="bn-item" onclick="goTab('bookings',null)" data-tab="bookings"><div class="bn-icon-wrap"><span class="bn-ico">◈</span></div><span class="bn-label">Bookings</span></button>
   <button class="bn-item" onclick="goTab('expenses',null)" data-tab="expenses"><div class="bn-icon-wrap"><span class="bn-ico">◇</span><span class="bn-dot" id="bnExpDot" style="display:none"></span></div><span class="bn-label">Expenses</span></button>
-  <button class="bn-item" onclick="goTab('analytics',null)" data-tab="analytics"><div class="bn-icon-wrap"><span class="bn-ico">◉</span></div><span class="bn-label">Analytics</span></button>
+  <button class="bn-item" onclick="goTab('family',null)" data-tab="family"><div class="bn-icon-wrap"><span class="bn-ico">◎</span></div><span class="bn-label">Family</span></button>
   <button class="bn-item" onclick="openMoreMenu()" id="bnMore" data-tab="more"><div class="bn-icon-wrap"><span class="bn-ico">⋯</span></div><span class="bn-label">More</span></button>
 </nav>
 
@@ -1928,7 +1926,7 @@ td.amt  { font-family:'Fira Code',monospace; font-size:12px; font-weight:600; }
         <span style="font-size:20px;">▦</span><div><div style="font-size:14px;font-weight:600;color:var(--ink);">Year Heatmap</div><div style="font-size:11px;color:var(--ink4);">Full year occupancy view</div></div>
       </div>
       <div onclick="goTab('family',null);closeMoreMenu()" style="display:flex;align-items:center;gap:12px;padding:12px 10px;border-radius:9px;cursor:pointer;" onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background=''">
-        <span style="font-size:20px;">◎</span><div><div style="font-size:14px;font-weight:600;color:var(--ink);">Family Split</div><div style="font-size:11px;color:var(--ink4);">3-way profit distribution</div></div>
+        <span style="font-size:20px;">◎</span><div><div style="font-size:14px;font-weight:600;color:var(--ink);">Family Ops</div><div style="font-size:11px;color:var(--ink4);">Cleaning, balances, notes</div></div>
       </div>
       <div onclick="goTab('guests',null);closeMoreMenu()" style="display:flex;align-items:center;gap:12px;padding:12px 10px;border-radius:9px;cursor:pointer;" onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background=''">
         <span style="font-size:20px;">⊘</span><div><div style="font-size:14px;font-weight:600;color:var(--ink);">Guest Flags</div><div style="font-size:11px;color:var(--ink4);">Blacklist & watch list</div></div>
@@ -2304,7 +2302,7 @@ if(bnExpDot && unpaidCount > 0) bnExpDot.style.display = 'block';
 const TABS = {
   overview:'Overview',calendar:'Calendar',bookings:'Bookings',
   expenses:'Expenses',analytics:'Analytics',heatmap:'Heatmap',
-  family:'Family Split',guests:'Guest Flags'
+  family:'Family Ops',guests:'Guest Flags'
 };
 
 let currentTab = 'overview';
@@ -2328,9 +2326,9 @@ function goTab(id, el) {
   const _ttl=document.getElementById('tabTitle'); if(_ttl) _ttl.textContent=TABS[id]||id;
   // Update mobile topbar context
   const ctxTitle = document.getElementById('topbarCtxTitle');
-  const ctxTitles = {overview:'Dashboard',calendar:'Calendar',bookings:'Bookings',expenses:'Expenses',analytics:'Analytics',heatmap:'Year Heatmap',family:'Family Split',guests:'Guest Flags'};
+  const ctxTitles = {overview:'Dashboard',calendar:'Calendar',bookings:'Bookings',expenses:'Expenses',analytics:'Analytics',heatmap:'Year Heatmap',family:'Family Ops',guests:'Guest Flags'};
   if(ctxTitle) ctxTitle.textContent = ctxTitles[id] || id;
-  const crumbs={overview:'Oct 2024 → May 2026',calendar:'Monthly view',bookings:'All guest records',expenses:'All financial records',analytics:'Performance insights',heatmap:'Full year view',family:'3-way profit split',guests:'Blacklist & watch list'};
+  const crumbs={overview:'Oct 2024 → May 2026',calendar:'Monthly view',bookings:'All guest records',expenses:'All financial records',analytics:'Performance insights',heatmap:'Full year view',family:'Cleaning · balances · notes',guests:'Blacklist & watch list'};
   const crumbEl=document.getElementById('tabCrumb');if(crumbEl)crumbEl.textContent=crumbs[id]||'';
   currentTab = id;
   if(!chartsInited[id]){chartsInited[id]=true; initTabCharts(id);}
@@ -2397,6 +2395,7 @@ function buildPillChart(){
 
 function buildRecentBookings(){
   const el = document.getElementById('recentBkList');
+  renderStaySnapshot();
   if(!el) return;
   const recent = BK.slice(-6).reverse();
   el.innerHTML = recent.map(b=>{
@@ -2981,22 +2980,76 @@ function settlementPlan(balances){
 
 function renderMonthlyBalance(){
   const list=document.getElementById('balanceList');
-  const settles=document.getElementById('settlementList');
-  if(!list||!settles) return;
+  if(!list) return;
   const month=selectedBalanceMonth();
   const {monthExpenses,total,balances}=monthlyBalance(month);
-  const names=Object.keys(balances).sort((a,b)=>(FAMILY_MEMBERS.includes(b)?0:1)-(FAMILY_MEMBERS.includes(a)?0:1)||a.localeCompare(b));
+  const paidNames=[...new Set(monthExpenses.map(e=>personKey(e.by)))].filter(Boolean);
+  const names=paidNames.sort((a,b)=>{
+    const paidA=monthExpenses.filter(e=>personKey(e.by)===a).reduce((sum,e)=>sum+e.amt,0);
+    const paidB=monthExpenses.filter(e=>personKey(e.by)===b).reduce((sum,e)=>sum+e.amt,0);
+    return paidB-paidA;
+  });
   list.innerHTML=names.map(n=>{
     const paid=monthExpenses.filter(e=>personKey(e.by)===n).reduce((a,e)=>a+e.amt,0);
     const bal=balances[n]||0;
-    const label=bal>=1?'Gets reimbursed':bal<=-1?'Should pay':'Balanced';
+    const label=bal>=1?'Above equal share':bal<=-1?'Below equal share':'Equal share';
     return `<div class="balance-row">
       <div class="balance-name">${esc(n)}<div class="balance-meta">paid ${Math.round(paid).toLocaleString()} MAD - month total ${Math.round(total).toLocaleString()} MAD</div></div>
       <div class="balance-amt" style="color:${bal>=1?'var(--green)':bal<=-1?'var(--red)':'var(--ink4)'};">${bal>=1?'+':''}${Math.round(bal).toLocaleString()}<div style="font-size:9px;font-weight:600;color:var(--ink4);font-family:'Plus Jakarta Sans',sans-serif;">${label}</div></div>
     </div>`;
   }).join('') || '<div class="empty-state-sub">No expenses for this month.</div>';
-  const plan=settlementPlan(balances);
-  settles.innerHTML=plan.length ? plan.map(p=>`<div class="settle-line"><span>${esc(p.from)} pays ${esc(p.to)}</span><strong>${Math.round(p.amt).toLocaleString()} MAD</strong></div>`).join('') : '<div class="empty-state-sub">No reimbursement needed for this month.</div>';
+  renderMonthExpenseFeed(monthExpenses);
+}
+
+function renderMonthExpenseFeed(monthExpenses){
+  const el=document.getElementById('monthExpenseFeed');
+  if(!el) return;
+  const latest=[...monthExpenses].sort((a,b)=>new Date(b.dt)-new Date(a.dt)).slice(0,8);
+  el.innerHTML=latest.length ? latest.map(e=>`
+    <div class="balance-row">
+      <div class="balance-name">${esc(e.desc||e.cat)}
+        <div class="balance-meta">${esc(e.cat)} - ${esc(personKey(e.by))} - ${fmtDate(e.dt)}</div>
+      </div>
+      <div class="balance-amt" style="color:${e.paid?'var(--green)':'var(--red)'};">${Math.round(e.amt).toLocaleString()} MAD</div>
+    </div>`).join('') : '<div class="empty-state-sub">No expenses for this month.</div>';
+}
+
+function bookingSnapshot(){
+  const now=new Date();
+  const sorted=[...BK].sort((a,b)=>new Date(a.ci)-new Date(b.ci));
+  const current=sorted.find(b=>new Date(b.ci)<=now&&new Date(b.co)>=now);
+  const next=sorted.find(b=>new Date(b.ci)>now);
+  return {current,next};
+}
+
+function stayLine(b, fallback){
+  if(!b) return fallback;
+  return `${fmtDate(b.ci)} to ${fmtDate(b.co)} - ${b.ni} nights - ${Math.round(b.tot).toLocaleString()} MAD`;
+}
+
+function renderStaySnapshot(){
+  const {current,next}=bookingSnapshot();
+  const nextName=document.getElementById('nextGuestName');
+  const nextDetail=document.getElementById('nextGuestDetail');
+  const currentName=document.getElementById('currentGuestName');
+  const currentDetail=document.getElementById('currentGuestDetail');
+  if(nextName) nextName.textContent=next?next.guest:'No upcoming guest';
+  if(nextDetail) nextDetail.textContent=stayLine(next,'Calendar is open');
+  if(currentName) currentName.textContent=current?current.guest:'No current guest';
+  if(currentDetail) currentDetail.textContent=current?`${fmtDate(current.ci)} to ${fmtDate(current.co)} - ${current.stat}`:'Apartment is free right now';
+
+  const handoff=document.getElementById('familyStayHandoff');
+  if(handoff){
+    handoff.innerHTML=`
+      <div class="balance-row">
+        <div class="balance-name">Current Guest<div class="balance-meta">${current?stayLine(current,current.stat):'Apartment is free right now'}</div></div>
+        <div class="balance-amt" style="color:${current?'var(--green)':'var(--ink4)'};">${current?esc(current.stat):'Free'}</div>
+      </div>
+      <div class="balance-row">
+        <div class="balance-name">Next Check-in<div class="balance-meta">${next?stayLine(next,next.stat):'No upcoming booking in table'}</div></div>
+        <div class="balance-amt" style="color:${next?'var(--p)':'var(--ink4)'};">${next?fmtDate(next.ci):'None'}</div>
+      </div>`;
+  }
 }
 
 function getFamilyNotes(){
@@ -3041,6 +3094,7 @@ function renderFamilyOps(){
   renderCleaningChecklist();
   renderMonthlyBalance();
   renderFamilyNotes();
+  renderStaySnapshot();
 }
 
 function buildFamily(){
@@ -3138,25 +3192,6 @@ function buildFamily(){
   }).join('');
 
   // ── CHARTS ───────────────────────────────────────────
-  const fCtx = document.getElementById('cFam').getContext('2d');
-  new Chart(fCtx,{type:'line',data:{labels:MO.map(d=>d.m),datasets:members.map(m=>({
-    label:m.name, data:MO.map(d=>Math.round(d.prf/3)),
-    borderColor:m.color, borderWidth:1.5, pointRadius:2, tension:.4, fill:false
-  }))},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#6B7280',font:{size:10},usePointStyle:true,pointStyle:'rect'}}},scales:{x:{grid:{display:false},ticks:{font:{size:9,family:"'Fira Code',monospace"},maxRotation:45}},y:{grid:{color:'rgba(17,24,39,.06)'},ticks:{font:{size:9},callback:v=>v>=1000?(v/1000).toFixed(0)+'k':v}}}}});
-
-  const paidByNames = Object.keys(paidByPerson);
-  const pbColors = ['#4F52E8','#7C3AED','#06B6D4','#F59E0B','#10B981','#EF4444'];
-  const pbCtx = document.getElementById('cPaidBy').getContext('2d');
-  new Chart(pbCtx,{type:'doughnut',data:{labels:paidByNames,datasets:[{data:paidByNames.map(n=>paidByPerson[n]),backgroundColor:pbColors.map(c=>c+'BB'),borderColor:pbColors,borderWidth:1.5,hoverOffset:6}]},options:{responsive:true,maintainAspectRatio:false,cutout:'70%',plugins:{legend:{display:false},tooltip:{backgroundColor:'#111827',borderColor:'rgba(79,82,232,.25)',borderWidth:1,padding:10,callbacks:{label:c=>` ${c.label}: ${Math.round(c.raw).toLocaleString()} MAD`}}}}});
-
-  const pbTotal = Object.values(paidByPerson).reduce((a,b)=>a+b,0);
-  document.getElementById('paidByList').innerHTML = paidByNames.map((n,i)=>`
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:7px;">
-      <div style="width:7px;height:7px;border-radius:50%;background:${pbColors[i]};flex-shrink:0;"></div>
-      <div style="flex:1;font-size:12px;color:var(--ink4);">${n}</div>
-      <div style="font-family:'Fira Code',monospace;font-size:11px;">${Math.round(paidByPerson[n]).toLocaleString()} MAD</div>
-    </div>`).join('');
-
   // ── MONTHLY TABLE ─────────────────────────────────────
   document.getElementById('famTable').innerHTML = MO.map(m=>{
     const share = Math.round(m.prf/3);
