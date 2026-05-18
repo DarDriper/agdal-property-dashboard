@@ -1,4 +1,4 @@
-const CACHE_NAME = 'agdal-dashboard-v2';
+const CACHE_NAME = 'agdal-dashboard-v3';
 const APP_SHELL = [
   './',
   './index.html',

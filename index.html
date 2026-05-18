@@ -1478,7 +1478,7 @@ td.amt  { font-family:'Fira Code',monospace; font-size:12px; font-weight:600; }
       <span class="nav-ico">◇</span> Expenses
       <span class="nav-badge warn" id="unpaidBadge">…</span>
     </div>
-    <div class="nav-item" onclick="goTab('family',this)"><span class="nav-ico">◎</span> Family Split</div>
+    <div class="nav-item" onclick="goTab('family',this)"><span class="nav-ico">◎</span> Family Ops</div>
     <div class="nav-item" onclick="goTab('guests',this)">
       <span class="nav-ico">⊘</span> Guest Flags
       <span class="nav-badge" id="flagBadge">3</span>
@@ -1553,26 +1553,26 @@ td.amt  { font-family:'Fira Code',monospace; font-size:12px; font-weight:600; }
         <div class="kpi hero">
           <div class="kpi-link" onclick="goTab('analytics',null)" title="View analytics">↗</div>
           <div class="kpi-lbl">Total Revenue</div>
-          <div class="kpi-val"><span class="ctr" data-v="231060">0</span><span class="unit"> MAD</span></div>
-          <div class="kpi-sub"><span class="tag">↑ 20 months active</span></div>
+          <div class="kpi-val"><span class="ctr" id="kpiTotalRevenue" data-v="0">0</span><span class="unit"> MAD</span></div>
+          <div class="kpi-sub"><span class="tag" id="kpiActiveMonths">Syncing months</span></div>
         </div>
         <div class="kpi">
-          <div class="kpi-link" onclick="goTab('family',null)" title="View family split">↗</div>
+          <div class="kpi-link" onclick="goTab('family',null)" title="View family ops">↗</div>
           <div class="kpi-lbl">Net Profit</div>
-          <div class="kpi-val"><span class="ctr" data-v="197130">0</span><span class="unit"> MAD</span></div>
-          <div class="kpi-sub"><span class="tag up">↑ 85% avg margin</span></div>
+          <div class="kpi-val"><span class="ctr" id="kpiNetProfit" data-v="0">0</span><span class="unit"> MAD</span></div>
+          <div class="kpi-sub"><span class="tag up" id="kpiAvgMargin">Syncing margin</span></div>
         </div>
         <div class="kpi">
           <div class="kpi-link" onclick="goTab('bookings',null)" title="View all bookings">↗</div>
           <div class="kpi-lbl">Total Bookings</div>
-          <div class="kpi-val"><span class="ctr" data-v="55">0</span></div>
-          <div class="kpi-sub"><span class="tag neu">All-time hosted</span></div>
+          <div class="kpi-val"><span class="ctr" id="kpiTotalBookings" data-v="0">0</span></div>
+          <div class="kpi-sub"><span class="tag neu" id="kpiBookingSub">Syncing table</span></div>
         </div>
         <div class="kpi">
           <div class="kpi-link" onclick="goTab('heatmap',null)" title="View heatmap">↗</div>
           <div class="kpi-lbl">Avg Occupancy</div>
-          <div class="kpi-val"><span class="ctr" data-v="47">0</span><span class="unit">%</span></div>
-          <div class="kpi-sub"><span class="tag up">Peak: 97%</span></div>
+          <div class="kpi-val"><span class="ctr" id="kpiAvgOccupancy" data-v="0">0</span><span class="unit">%</span></div>
+          <div class="kpi-sub"><span class="tag up" id="kpiPeakOccupancy">Syncing occupancy</span></div>
         </div>
       </div>
 
@@ -1633,17 +1633,17 @@ td.amt  { font-family:'Fira Code',monospace; font-size:12px; font-weight:600; }
       <!-- ROW 3 -->
       <div class="row3">
 
-        <!-- Family split summary -->
+        <!-- Family ops summary -->
         <div class="card">
           <div class="card-hd">
-            <div class="card-title">Family Split</div>
-            <span class="badge badge-p">3-Way</span>
+            <div class="card-title">Family Ops</div>
+            <span class="badge badge-p" id="famMiniMonth">This Month</span>
           </div>
           <div id="famMiniList"></div>
           <div class="divider"></div>
           <div style="padding:10px 12px;background:var(--p-light);border-radius:9px;display:flex;align-items:center;justify-content:space-between;">
-            <div style="font-size:12px;font-weight:600;color:var(--p);">Each person receives</div>
-            <div style="font-family:'Fira Code',monospace;font-size:15px;font-weight:700;color:var(--p);">65,710 MAD</div>
+            <div style="font-size:12px;font-weight:600;color:var(--p);">Open cleaning, notes, balances</div>
+            <button class="mini-btn" onclick="goTab('family',null)">Open</button>
           </div>
         </div>
 
@@ -1665,7 +1665,7 @@ td.amt  { font-family:'Fira Code',monospace; font-size:12px; font-weight:600; }
               </defs>
             </svg>
           </div>
-          <div class="progress-val"><span class="ctr2" data-v="47">0</span>%</div>
+          <div class="progress-val"><span class="ctr2" id="ringOccValue" data-v="0">0</span>%</div>
           <div class="progress-lbl">Average Occupancy Rate</div>
           <div class="progress-legend">
             <div class="p-leg"><div class="p-leg-dot" style="background:var(--p)"></div><span style="color:var(--ink3);">Booked</span></div>
@@ -2412,34 +2412,72 @@ function buildRecentBookings(){
   }).join('');
 }
 
+function updateDashboardMetrics(){
+  const rev = MO.reduce((sum,m)=>sum+m.rev,0);
+  const prf = MO.reduce((sum,m)=>sum+m.prf,0);
+  const occupiedMonths = MO.filter(m=>m.rev||m.prf||m.occ);
+  const avgOcc = occupiedMonths.length
+    ? Math.round(occupiedMonths.reduce((sum,m)=>sum+m.occ,0)/occupiedMonths.length)
+    : 0;
+  const peakOcc = occupiedMonths.length ? Math.round(Math.max(...occupiedMonths.map(m=>m.occ))) : 0;
+  const margin = rev ? Math.round((prf/rev)*100) : 0;
+  const setCounter=(id,val)=>{
+    const el=document.getElementById(id);
+    if(el){ el.dataset.v=String(Math.max(0,Math.round(val))); el.textContent='0'; }
+  };
+  setCounter('kpiTotalRevenue',rev);
+  setCounter('kpiNetProfit',prf);
+  setCounter('kpiTotalBookings',BK.length);
+  setCounter('kpiAvgOccupancy',avgOcc);
+  const active=document.getElementById('kpiActiveMonths');
+  if(active) active.textContent=`${MO.length} months active`;
+  const avg=document.getElementById('kpiAvgMargin');
+  if(avg) avg.textContent=`${margin}% avg margin`;
+  const bk=document.getElementById('kpiBookingSub');
+  if(bk) bk.textContent=`${BK.length} bookings synced`;
+  const peak=document.getElementById('kpiPeakOccupancy');
+  if(peak) peak.textContent=`Peak: ${peakOcc}%`;
+  const ringVal=document.getElementById('ringOccValue');
+  if(ringVal){ ringVal.dataset.v=String(avgOcc); ringVal.textContent='0'; }
+}
+
 function buildFamMini(){
   const el = document.getElementById('famMiniList');
   if(!el) return;
-  const totalProfit = MO.reduce((a,b)=>a+b.prf,0);
-  const perPerson = totalProfit/3;
-  const members=[
-    {name:'Eliass',  color:'#4F52E8', bg:'rgba(79,82,232,.1)'},
-    {name:'Myahmed', color:'#7C3AED', bg:'rgba(124,58,237,.1)'},
-    {name:'Nouhaila',color:'#06B6D4', bg:'rgba(6,182,212,.1)'},
-  ];
-  el.innerHTML = members.map(m=>{
-    const expPaid = EX.filter(e=>e.by===m.name).reduce((a,b)=>a+b.amt,0);
-    const total = perPerson + expPaid;
+  const month = selectedBalanceMonth();
+  const monthLabel = document.getElementById('famMiniMonth');
+  if(monthLabel) monthLabel.textContent = month || 'This Month';
+  const {monthExpenses,total}=monthlyBalance(month);
+  const names=[...new Set(monthExpenses.map(e=>personKey(e.by)))].filter(Boolean).sort((a,b)=>{
+    const paidA=monthExpenses.filter(e=>personKey(e.by)===a).reduce((sum,e)=>sum+e.amt,0);
+    const paidB=monthExpenses.filter(e=>personKey(e.by)===b).reduce((sum,e)=>sum+e.amt,0);
+    return paidB-paidA;
+  });
+  const colors=['#4F52E8','#7C3AED','#06B6D4','#F59E0B','#10B981'];
+  el.innerHTML = names.map((name,i)=>{
+    const expPaid = monthExpenses.filter(e=>personKey(e.by)===name).reduce((a,b)=>a+b.amt,0);
+    const color=colors[i%colors.length];
     return `<div class="fam-item">
-      <div class="fam-av" style="background:${m.bg};">${m.name.charAt(0)}</div>
+      <div class="fam-av" style="background:${color}18;color:${color};">${esc(name.charAt(0))}</div>
       <div class="fam-info">
-        <div class="fam-name">${m.name}</div>
-        <div class="fam-sub">${expPaid>0?'+ '+Math.round(expPaid).toLocaleString()+' MAD reimbursed':' Profit share only'}</div>      </div>
-      <div class="fam-tag" style="background:${m.bg};color:${m.color};">${Math.round(total).toLocaleString()} MAD</div>
+        <div class="fam-name">${esc(name)}</div>
+        <div class="fam-sub">paid this month</div>
+      </div>
+      <div class="fam-tag" style="background:${color}18;color:${color};">${Math.round(expPaid).toLocaleString()} MAD</div>
     </div>`;
-  }).join('');
+  }).join('') || '<div class="empty-state-sub">No expenses paid this month.</div>';
+  const summary = document.createElement('div');
+  summary.className = 'empty-state-sub';
+  summary.style.marginTop = '8px';
+  summary.textContent = `Month total: ${Math.round(total).toLocaleString()} MAD`;
+  el.appendChild(summary);
 }
 
 function animateRing(){
   const ring = document.getElementById('ringProgress');
   if(!ring) return;
   const r = 50, circ = 2 * Math.PI * r;
-  const pct = 47/100;
+  const pct = Math.min(1, (+document.getElementById('ringOccValue')?.dataset.v || 0)/100);
   const offset = circ * (1 - pct);
   setTimeout(()=>{
     ring.style.transition = 'stroke-dashoffset 1.4s cubic-bezier(.4,0,.2,1)';
@@ -2479,6 +2517,7 @@ function initTabCharts(id){
       new Chart(oCtx,{type:'line',data:{labels:MO.map(d=>d.m),datasets:[{label:'Occupancy %',data:MO.map(d=>d.occ),borderColor:'#4F52E8',borderWidth:2,pointBackgroundColor:'#4F52E8',pointRadius:3,pointHoverRadius:6,fill:true,backgroundColor:og,tension:.4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{backgroundColor:'#111827',borderColor:'rgba(79,82,232,.25)',borderWidth:1,padding:11,callbacks:{label:c=>` Occupancy: ${c.raw}%`}}},scales:{x:{grid:{display:false},ticks:{font:{size:9.5,family:"'Fira Code',monospace"},maxRotation:45}},y:{grid:{color:'rgba(17,24,39,.05)'},min:0,max:100,ticks:{font:{size:9.5},callback:v=>v+'%'}}}}});
     }
     buildAlerts();
+    updateDashboardMetrics();
     animateCounters();
     animateBars();
     buildPillChart();
@@ -3604,7 +3643,7 @@ function reRenderAll(){
   if(a==='analytics') {buildAnalytics();buildDowAndTrend();chartsInited['analytics_extra']=true;}
   if(a==='family')    {buildFamily();chartsInited['family_done']=true;}
   if(a==='guests')    {renderFlags();}
-  buildPillChart(); buildRecentBookings(); buildFamMini(); animateRing();
+  updateDashboardMetrics(); buildPillChart(); buildRecentBookings(); buildFamMini(); animateRing(); animateCounters(); animCounters2();
   const uc=EX.filter(e=>!e.paid).length;
   const ub=document.getElementById('unpaidBadge'); if(ub) ub.textContent=uc;
   const bd=document.getElementById('bnExpDot');    if(bd) bd.style.display=uc>0?'block':'none';
@@ -4189,9 +4228,11 @@ document.addEventListener('keydown', e=>{
 <script>
 if ('serviceWorker' in navigator && location.protocol !== 'file:') {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./service-worker.js').catch(err => {
-      console.warn('Service worker registration failed:', err);
-    });
+    navigator.serviceWorker.register('./service-worker.js?v=3')
+      .then(reg => reg.update())
+      .catch(err => {
+        console.warn('Service worker registration failed:', err);
+      });
   });
 }
 </script>
