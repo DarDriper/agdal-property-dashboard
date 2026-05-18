@@ -903,28 +903,28 @@ nav {
 
 /* ── TRACKER CARD (dark) ── */
 .tracker-card {
-  background: linear-gradient(145deg, #1a1f3a 0%, var(--p-dark) 100%);
+  background: linear-gradient(145deg, #1f275f 0%, #3d3596 100%);
   border: none;
   border-radius: var(--r-lg);
-  padding: 20px;
+  padding: 18px;
   color: #fff;
 }
 
 .tracker-title {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
   color: rgba(255,255,255,.8);
-  margin-bottom: 16px;
+  margin-bottom: 8px;
 }
 
 .tracker-time {
-  font-family: 'Fira Code', monospace;
-  font-size: 34px;
-  font-weight: 500;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: clamp(30px, 8vw, 42px);
+  font-weight: 800;
   color: #fff;
-  letter-spacing: 2px;
-  text-align: center;
-  margin-bottom: 14px;
+  letter-spacing: 0;
+  line-height: 1;
+  margin-bottom: 6px;
 }
 
 .tracker-btns {
@@ -948,11 +948,113 @@ nav {
 .tracker-btn.stop  { background: var(--red); color: #fff; }
 
 .tracker-sub {
-  font-size: 10.5px;
-  color: rgba(255,255,255,.45);
-  text-align: center;
-  margin-top: 12px;
-  font-family: 'Fira Code', monospace;
+  font-size: 11px;
+  color: rgba(255,255,255,.72);
+  margin-top: 3px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.month-card-top {
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:14px;
+}
+
+.month-status {
+  border:1px solid rgba(255,255,255,.25);
+  background:rgba(255,255,255,.14);
+  color:#fff;
+  border-radius:999px;
+  padding:5px 9px;
+  font-size:10.5px;
+  font-weight:700;
+  white-space:nowrap;
+}
+
+.month-stat-grid {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin:14px 0;
+}
+
+.month-stat {
+  padding:10px;
+  background:rgba(255,255,255,.11);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:10px;
+}
+
+.month-stat-label {
+  font-size:9.5px;
+  font-weight:700;
+  color:rgba(255,255,255,.56);
+  text-transform:uppercase;
+  letter-spacing:.7px;
+  margin-top:3px;
+}
+
+.month-stat-value {
+  font-size:20px;
+  font-weight:800;
+  color:#fff;
+  letter-spacing:0;
+  line-height:1.1;
+}
+
+.month-progress {
+  height:6px;
+  background:rgba(255,255,255,.14);
+  border-radius:999px;
+  overflow:hidden;
+  margin:8px 0 10px;
+}
+
+.month-progress > div {
+  height:100%;
+  width:0%;
+  background:linear-gradient(90deg,#A5B4FC,#C4B5FD);
+  border-radius:999px;
+  transition:width .8s ease;
+}
+
+.quick-actions {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-top:14px;
+}
+
+.quick-action {
+  border:1px solid rgba(255,255,255,.22);
+  background:rgba(255,255,255,.12);
+  color:#fff;
+  border-radius:10px;
+  padding:9px 10px;
+  font-size:12px;
+  font-weight:700;
+  cursor:pointer;
+  font-family:'Plus Jakarta Sans',sans-serif;
+  text-align:center;
+}
+
+.quick-action:hover { background:rgba(255,255,255,.18); }
+
+.mini-btn {
+  border:1px solid var(--p-light2);
+  background:var(--p-light);
+  color:var(--p);
+  border-radius:999px;
+  padding:7px 12px;
+  font-size:11.5px;
+  font-weight:800;
+  cursor:pointer;
+  font-family:'Plus Jakarta Sans',sans-serif;
+}
+
+.mini-btn:hover { background:var(--p-light2); }
 }
 
 /* ── ALERT ITEMS ── */
@@ -1675,24 +1777,30 @@ td.amt  { font-family:'Fira Code',monospace; font-size:12px; font-weight:600; }
 
         <!-- Dark tracker / stats -->
         <div class="tracker-card">
-          <div class="tracker-title">May 2026 · Current Month</div>
-          <div class="tracker-time">5,620 MAD</div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;">
-            <div style="text-align:center;padding:10px;background:rgba(255,255,255,.08);border-radius:9px;">
-              <div style="font-size:18px;font-weight:800;color:#fff;letter-spacing:-1px;">3</div>
-              <div style="font-size:9px;font-weight:600;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:1px;margin-top:2px;">Bookings</div>
+          <div class="month-card-top">
+            <div>
+              <div class="tracker-title" id="monthTitle">Current Month</div>
+              <div class="tracker-time" id="monthRevenue">0 MAD</div>
+              <div class="tracker-sub" id="monthProfitLine">Syncing monthly table</div>
             </div>
-            <div style="text-align:center;padding:10px;background:rgba(255,255,255,.08);border-radius:9px;">
-              <div style="font-size:18px;font-weight:800;color:#fff;letter-spacing:-1px;">8</div>
-              <div style="font-size:9px;font-weight:600;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:1px;margin-top:2px;">Nights</div>
+            <div class="month-status" id="monthStatus">Live</div>
+          </div>
+          <div class="month-stat-grid">
+            <div class="month-stat">
+              <div class="month-stat-value" id="monthBookings">0</div>
+              <div class="month-stat-label">Bookings</div>
+            </div>
+            <div class="month-stat">
+              <div class="month-stat-value" id="monthNights">0</div>
+              <div class="month-stat-label">Nights</div>
             </div>
           </div>
-          <div style="height:4px;background:rgba(255,255,255,.12);border-radius:2px;overflow:hidden;margin-bottom:8px;">
-            <div style="height:100%;width:26%;background:linear-gradient(90deg,#818CF8,#a78bfa);border-radius:2px;"></div>
+          <div class="month-progress"><div id="monthOccBar"></div></div>
+          <div class="tracker-sub" id="monthOccText">0% occupancy this month</div>
+          <div class="quick-actions">
+            <button class="quick-action" onclick="goTab('calendar',null)">Calendar</button>
+            <button class="quick-action" onclick="goTab('family',null)">Family Ops</button>
           </div>
-          <div class="tracker-sub">26% occupancy this month</div>
-          <div class="divider" style="border-color:rgba(255,255,255,.1);margin:12px 0;"></div>
-          <div class="tracker-sub" style="font-size:12px;">+ 4,783 MAD net profit · 85% margin</div>
         </div>
 
       </div>
@@ -1882,7 +1990,7 @@ td.amt  { font-family:'Fira Code',monospace; font-size:12px; font-weight:600; }
         <div class="card"><div class="card-hd"><div><div class="card-title">Stay Handoff</div><div class="card-sub">Current and next check-in from bookings</div></div></div><div id="familyStayHandoff"></div></div>
         <div class="card"><div class="card-hd"><div><div class="card-title">This Month Expense Feed</div><div class="card-sub">Latest expenses from the selected month</div></div></div><div id="monthExpenseFeed"></div></div>
       </div>
-      <div class="card"><div class="card-hd"><div class="card-title">Monthly Breakdown</div></div><div class="tbl-wrap" style="border:none;box-shadow:none;"><table><thead><tr><th>Month</th><th>Revenue</th><th>Expenses</th><th>Net Profit</th><th>Each Gets</th><th>Occupancy</th></tr></thead><tbody id="famTable"></tbody></table></div></div>
+      <div class="card"><div class="card-hd"><div class="card-title">Monthly Breakdown</div></div><div class="tbl-wrap" style="border:none;box-shadow:none;"><table><thead><tr><th>Month</th><th>Revenue</th><th>Expenses</th><th>Net Profit</th><th>Bookings</th><th>Occupancy</th></tr></thead><tbody id="famTable"></tbody></table></div></div>
     </div>
 
     <!-- ══ GUESTS ══ -->
@@ -2439,6 +2547,34 @@ function updateDashboardMetrics(){
   if(peak) peak.textContent=`Peak: ${peakOcc}%`;
   const ringVal=document.getElementById('ringOccValue');
   if(ringVal){ ringVal.dataset.v=String(avgOcc); ringVal.textContent='0'; }
+  updateMonthSnapshot();
+}
+
+function money(v){
+  return `${Math.round(v||0).toLocaleString()} MAD`;
+}
+
+function updateMonthSnapshot(){
+  const month = MO.length ? MO[MO.length - 1] : null;
+  if(!month) return;
+  const title=document.getElementById('monthTitle');
+  const revenue=document.getElementById('monthRevenue');
+  const profit=document.getElementById('monthProfitLine');
+  const status=document.getElementById('monthStatus');
+  const bookings=document.getElementById('monthBookings');
+  const nights=document.getElementById('monthNights');
+  const bar=document.getElementById('monthOccBar');
+  const occText=document.getElementById('monthOccText');
+  const margin = month.rev ? Math.round((month.prf/month.rev)*100) : 0;
+  const occ = Math.max(0, Math.min(100, Math.round(month.occ||0)));
+  if(title) title.textContent = `${month.m} - This Month`;
+  if(revenue) revenue.textContent = money(month.rev);
+  if(profit) profit.textContent = `${month.prf>=0?'+':''}${money(month.prf)} net profit - ${margin}% margin`;
+  if(status) status.textContent = 'Synced';
+  if(bookings) bookings.textContent = Math.round(month.bk||0).toLocaleString();
+  if(nights) nights.textContent = Math.round(month.ni||0).toLocaleString();
+  if(bar) bar.style.width = `${occ}%`;
+  if(occText) occText.textContent = `${occ}% occupancy this month`;
 }
 
 function buildFamMini(){
@@ -3021,7 +3157,7 @@ function renderMonthlyBalance(){
   const list=document.getElementById('balanceList');
   if(!list) return;
   const month=selectedBalanceMonth();
-  const {monthExpenses,total,balances}=monthlyBalance(month);
+  const {monthExpenses,total}=monthlyBalance(month);
   const paidNames=[...new Set(monthExpenses.map(e=>personKey(e.by)))].filter(Boolean);
   const names=paidNames.sort((a,b)=>{
     const paidA=monthExpenses.filter(e=>personKey(e.by)===a).reduce((sum,e)=>sum+e.amt,0);
@@ -3030,11 +3166,10 @@ function renderMonthlyBalance(){
   });
   list.innerHTML=names.map(n=>{
     const paid=monthExpenses.filter(e=>personKey(e.by)===n).reduce((a,e)=>a+e.amt,0);
-    const bal=balances[n]||0;
-    const label=bal>=1?'Above equal share':bal<=-1?'Below equal share':'Equal share';
+    const count=monthExpenses.filter(e=>personKey(e.by)===n).length;
     return `<div class="balance-row">
-      <div class="balance-name">${esc(n)}<div class="balance-meta">paid ${Math.round(paid).toLocaleString()} MAD - month total ${Math.round(total).toLocaleString()} MAD</div></div>
-      <div class="balance-amt" style="color:${bal>=1?'var(--green)':bal<=-1?'var(--red)':'var(--ink4)'};">${bal>=1?'+':''}${Math.round(bal).toLocaleString()}<div style="font-size:9px;font-weight:600;color:var(--ink4);font-family:'Plus Jakarta Sans',sans-serif;">${label}</div></div>
+      <div class="balance-name">${esc(n)}<div class="balance-meta">${count} expense${count!==1?'s':''} - month total ${money(total)}</div></div>
+      <div class="balance-amt" style="color:var(--green);">${money(paid)}</div>
     </div>`;
   }).join('') || '<div class="empty-state-sub">No expenses for this month.</div>';
   renderMonthExpenseFeed(monthExpenses);
@@ -3137,6 +3272,76 @@ function renderFamilyOps(){
 }
 
 function buildFamily(){
+{
+  const curMo = MO[MO.length - 1];
+  if(!curMo) return;
+  const curMonth = curMo.m;
+  const monthExpenses = EX.filter(e=>e.mo===curMonth);
+  const monthPaid = monthExpenses.reduce((sum,e)=>sum+e.amt,0);
+  const paidNames = [...new Set(monthExpenses.map(e=>personKey(e.by)))].filter(Boolean);
+  const notesCount = getFamilyNotes().length;
+  const cleaningState = getCleaningState();
+  const doneCount = CLEANING_ITEMS.filter((_,i)=>cleaningState[i]).length;
+  const cleaningTotal = CLEANING_ITEMS.length;
+
+  const heroRow = document.getElementById('famHeroRow');
+  if(heroRow){
+    heroRow.innerHTML = `
+      <div class="kpi hero" style="padding:22px 20px;">
+        <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.65);margin-bottom:6px;">${curMonth} - Family View</div>
+        <div style="font-size:36px;font-weight:800;color:#fff;letter-spacing:0;line-height:1;">${money(curMo.rev)}</div>
+        <div style="font-size:12px;color:rgba(255,255,255,.76);margin-top:6px;">monthly revenue - ${curMo.occ}% occupancy</div>
+        <div style="margin-top:12px;height:3px;background:rgba(255,255,255,.15);border-radius:2px;overflow:hidden;">
+          <div style="height:100%;width:${curMo.occ}%;background:rgba(255,255,255,.5);border-radius:2px;transition:width 1.2s ease;"></div>
+        </div>
+        <div style="font-size:11px;color:rgba(255,255,255,.6);margin-top:6px;">${money(curMo.prf)} net profit after ${money(curMo.exp)} expenses</div>
+      </div>
+      <div class="card" style="text-align:center;display:flex;flex-direction:column;justify-content:center;">
+        <div style="font-size:9.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--ink4);margin-bottom:8px;">Expenses Paid</div>
+        <div style="font-size:30px;font-weight:800;color:var(--green);letter-spacing:0;">${money(monthPaid)}</div>
+        <div style="font-size:11px;color:var(--ink4);margin-top:4px;">${paidNames.length} person${paidNames.length!==1?'s':''} paid this month</div>
+      </div>
+      <div class="card" style="text-align:center;display:flex;flex-direction:column;justify-content:center;">
+        <div style="font-size:9.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--ink4);margin-bottom:8px;">Cleaning</div>
+        <div style="font-size:30px;font-weight:800;color:var(--p);letter-spacing:0;">${doneCount}/${cleaningTotal}</div>
+        <div style="font-size:11px;color:var(--ink4);margin-top:4px;">tasks completed</div>
+      </div>
+      <div class="card" style="text-align:center;display:flex;flex-direction:column;justify-content:center;">
+        <div style="font-size:9.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--ink4);margin-bottom:8px;">Family Notes</div>
+        <div style="font-size:30px;font-weight:800;color:var(--ink);letter-spacing:0;">${notesCount}</div>
+        <div style="font-size:11px;color:var(--ink4);margin-top:4px;">saved notes</div>
+      </div>`;
+  }
+
+  const famCards = document.getElementById('famCards');
+  if(famCards){
+    famCards.innerHTML = [
+      ['Cleaning Checklist', `${doneCount}/${cleaningTotal} done`, 'Open tasks before the next guest arrives.'],
+      ['Expense Balance', `${paidNames.length} payer${paidNames.length!==1?'s':''}`, 'See who paid expenses for this month.'],
+      ['Family Notes', `${notesCount} note${notesCount!==1?'s':''}`, 'Keep apartment reminders in one place.']
+    ].map(([title,value,sub])=>`
+      <div class="fam-card" style="text-align:left;">
+        <div class="fam-name" style="font-size:15px;color:var(--ink);">${title}</div>
+        <div style="font-size:28px;font-weight:800;color:var(--p);letter-spacing:0;margin:8px 0 4px;">${value}</div>
+        <div class="fam-stat-lbl" style="text-align:left;line-height:1.45;">${sub}</div>
+        <button class="mini-btn" style="margin-top:14px;" onclick="goTab('family',null)">Open</button>
+      </div>`).join('');
+  }
+
+  document.getElementById('famTable').innerHTML = MO.map(m=>{
+    return `<tr>
+      <td class="mono">${m.m}</td>
+      <td class="amt">${money(m.rev)}</td>
+      <td class="amt" style="color:var(--red);">${money(m.exp)}</td>
+      <td class="amt" style="color:${m.prf>=0?'var(--green)':'var(--red)'};">${m.prf>=0?'+':''}${money(m.prf)}</td>
+      <td class="amt" style="color:var(--p);font-weight:700;">${Math.round(m.bk||0)}</td>
+      <td><span class="badge ${m.occ>=70?'badge-green':m.occ>=40?'badge-gold':'badge-red'}">${m.occ}%</span></td>
+    </tr>`;
+  }).join('');
+
+  renderFamilyOps();
+  return;
+}
   const members=[
     {name:'Eliass',  emoji:'👨', color:'#4F52E8'},
     {name:'Myahmed', emoji:'👨', color:'#7C3AED'},
@@ -4228,7 +4433,7 @@ document.addEventListener('keydown', e=>{
 <script>
 if ('serviceWorker' in navigator && location.protocol !== 'file:') {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./service-worker.js?v=3')
+    navigator.serviceWorker.register('./service-worker.js?v=4')
       .then(reg => reg.update())
       .catch(err => {
         console.warn('Service worker registration failed:', err);
